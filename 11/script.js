@@ -1,40 +1,77 @@
-El grinch quiere robar los regalos de Navidad del almacén. Para ello necesita saber qué regalos no tienen vigilancia.
+function findUnsafeGifts(warehouse) {
+    const rows = warehouse.length;
+    const cols = warehouse[0].length;
+    let unsafe = 0;
+    
+    // Coordenadas de las 4 posiciones adyacentes
+    const adjacentPositions = [
+        { row: -1, col: 0 },  // arriba
+        { row: 1, col: 0 },   // abajo
+        { row: 0, col: -1 },  // izquierda
+        { row: 0, col: 1 }    // derecha
+    ];
+    
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            if (warehouse[i][j] === '*') {
+                let hasCamera = false;
+                
+                // Revisar cada posición adyacente
+                for (const pos of adjacentPositions) {
+                    const adjRow = i + pos.row;
+                    const adjCol = j + pos.col;
+                    
+                    // Verificar que esté dentro de los límites
+                    if (adjRow >= 0 && adjRow < rows && 
+                        adjCol >= 0 && adjCol < cols) {
+                        
+                        // Si hay una cámara en esta posición adyacente
+                        if (warehouse[adjRow][adjCol] === '#') {
+                            hasCamera = true;
+                            break; // Ya sabemos que está vigilado
+                        }
+                    }
+                }
+                
+                // Si no tiene cámara en ninguna posición adyacente
+                if (!hasCamera) {
+                    unsafe++;
+                }
+            }
+        }
+    }
+    
+    return unsafe;
+}
 
-El almacén se representa como un array de strings (string[]), donde cada regalo (*) está protegido si su posición está junto a una cámara (#). Cada espacio vacío se representa con un punto (.).
+// Más pruebas
+console.log("=== Pruebas adicionales ===");
 
-Tu tarea es contar cuántos regalos están sin vigilancia, es decir, que no tienen ninguna cámara adyacente (arriba, abajo, izquierda o derecha).
-
-Ten en cuenta: solo se considera como "adyacente" las 4 direcciones cardinales, no en diagonal.
-
-Los regalos en las esquinas o bordes pueden estar sin vigilancia, siempre que no tengan obstáculos directamente al lado.
-
-findUnsafeGifts([
-  '.*.',
+// Caso 1: Todos los regalos están vigilados
+console.log(findUnsafeGifts([
   '*#*',
-  '.*.'
-]) // ➞ 0
-
-// Todos los regalos están junto a una cámara
-
-findUnsafeGifts([
-  '...',
-  '.*.',
-  '...'
-]) // ➞ 1
-
-// Este regalo no tiene cámaras alrededor
-
-findUnsafeGifts([
-  '*.*',
-  '...',
+  '#*#',
   '*#*'
-]) // ➞ 2
-// Los regalos en las esquinas superiores no tienen cámaras alrededor
+])); // ➞ 0 (todos vigilados)
 
-findUnsafeGifts([
+// Caso 2: Solo regalos en los bordes
+/* console.log(findUnsafeGifts([
+  '****',
+  '....',
+  '....',
+  '....'
+])); // ➞ 4 (los 4 de arriba no tienen cámaras)
+
+// Caso 3: Regalo completamente aislado
+console.log(findUnsafeGifts([
   '.....',
-  '.*.*.',
-  '..#..',
-  '.*.*.',
+  '..*..',
   '.....'
-]) // ➞ 4
+])); // ➞ 1
+
+// Caso 4: Almacén vacío
+console.log(findUnsafeGifts([
+  '.....',
+  '.....',
+  '.....'
+])); // ➞ 0 */
